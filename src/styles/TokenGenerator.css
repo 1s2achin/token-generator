@@ -1,0 +1,38 @@
+.token-generator {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+  
+.token-display {
+    display: grid;
+    grid-template-columns: repeat(var(--tokens-per-row), 1fr); 
+    gap: 10px; 
+    margin-top: 10px;
+  }
+
+  .token {
+    padding: 10px; 
+    background-color: #f1f1f1; 
+    border: 1px solid lightgray; 
+    border-radius: 5px; 
+    text-align: center; 
+  }
+
+h4, h6 {
+    text-align: center;
+    color: #333;
+}
+
+button {
+    margin-top: 20px;
+}
+.red-token {
+    background-color: #ffcccc; 
+  }
+.blue-token{
+background-color: rgba(0, 0, 255, 0.273);
+}
