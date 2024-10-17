@@ -5,55 +5,82 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../styles/TokenGenerator.css';
 
 function TokenGenerator() {
-  const [blueTokens, setBlueTokens] = useState(0);
-  const [bluePrefix, setBluePrefix] = useState('');
-  const [bluePerRow, setBluePerRow] = useState(0);
-  const [redTokens, setRedTokens] = useState(0);
-  const [redPrefix, setRedPrefix] = useState('');
-  const [redPerRow, setRedPerRow] = useState(0);
-  const [tokens, setTokens] = useState({ blue: [], red: [] });
+  const [tokenSettings, setTokenSettings] = useState({
+    blueTokens: 0,
+    bluePrefix: '',
+    bluePerRow: 0,
+    redTokens: 0,
+    redPrefix: '',
+    redPerRow: 0,
+    tokens: { blue: [], red: [] },
+  });
 
+  // Handle general input change for the form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTokenSettings((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // Function to handle tokens per row limit
+  const handleTokensPerRowChange = (name) => (e) => {
+    const value = parseInt(e.target.value);
+    if (value > 10) {
+      toast.warning('Only up to 10 tokens can be displayed per row!');
+      setTokenSettings((prevState) => ({
+        ...prevState,
+        [name]: 10,
+      }));
+    } else {
+      setTokenSettings((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  // Handle focus to clear '0' values in the input fields
+  const handleFocus = (name) => (e) => {
+    if (e.target.value === '0') {
+      setTokenSettings((prevState) => ({
+        ...prevState,
+        [name]: '',
+      }));
+    }
+  };
+
+  // Generate tokens based on the input values
   const handleGenerate = () => {
     let blueTokenArray = [];
     let redTokenArray = [];
 
-    for (let i = 1; i <= blueTokens; i++) {
-      blueTokenArray.push(`${bluePrefix}${i}`);
+    for (let i = 1; i <= tokenSettings.blueTokens; i++) {
+      blueTokenArray.push(`${tokenSettings.bluePrefix}${i}`);
     }
 
-    for (let i = 1; i <= redTokens; i++) {
-      redTokenArray.push(`${redPrefix}${i}`);
+    for (let i = 1; i <= tokenSettings.redTokens; i++) {
+      redTokenArray.push(`${tokenSettings.redPrefix}${i}`);
     }
 
-    setTokens({ blue: blueTokenArray, red: redTokenArray });
+    setTokenSettings((prevState) => ({
+      ...prevState,
+      tokens: { blue: blueTokenArray, red: redTokenArray },
+    }));
   };
 
+  // Clear all input fields and reset state
   const handleClear = () => {
-    setBlueTokens(0);
-    setBluePrefix('');
-    setBluePerRow(0);
-    setRedTokens(0);
-    setRedPrefix('');
-    setRedPerRow(0);
-    setTokens({ blue: [], red: [] });
-  };
-
-  // Function to limit the tokens per row and show toast if more than 10
-  const handleTokensPerRowChange = (setter) => (e) => {
-    const value = parseInt(e.target.value);
-    if (value > 10) {
-      toast.warning('Only up to 10 tokens can be displayed per row!');
-      setter(10); 
-    } else {
-      setter(value);
-    }
-  };
-
-  // Function to handle focus event to clear the '0' value
-  const handleFocus = (setter) => (e) => {
-    if (e.target.value === '0') {
-      setter('');  
-    }
+    setTokenSettings({
+      blueTokens: 0,
+      bluePrefix: '',
+      bluePerRow: 0,
+      redTokens: 0,
+      redPrefix: '',
+      redPerRow: 0,
+      tokens: { blue: [], red: [] },
+    });
   };
 
   return (
@@ -69,9 +96,10 @@ function TokenGenerator() {
           <TextField
             label="Number of Blue Tokens"
             type="number"
-            value={blueTokens}
-            onChange={(e) => setBlueTokens(e.target.value)}
-            onFocus={handleFocus(setBlueTokens)}  // Clear '0' on focus
+            name="blueTokens"
+            value={tokenSettings.blueTokens}
+            onChange={handleChange}
+            onFocus={handleFocus('blueTokens')}  
             inputProps={{ min: "0" }}
             fullWidth
           />
@@ -79,8 +107,9 @@ function TokenGenerator() {
         <Grid item xs={12}>
           <TextField
             label="Prefix for Blue Tokens"
-            value={bluePrefix}
-            onChange={(e) => setBluePrefix(e.target.value)}
+            name="bluePrefix"
+            value={tokenSettings.bluePrefix}
+            onChange={handleChange}
             fullWidth
           />
         </Grid>
@@ -88,9 +117,10 @@ function TokenGenerator() {
           <TextField
             label="Blue Tokens Per Row"
             type="number"
-            value={bluePerRow}
-            onChange={handleTokensPerRowChange(setBluePerRow)}
-            onFocus={handleFocus(setBluePerRow)}  
+            name="bluePerRow"
+            value={tokenSettings.bluePerRow}
+            onChange={handleTokensPerRowChange('bluePerRow')}
+            onFocus={handleFocus('bluePerRow')}  
             inputProps={{ min: "0" }}
             fullWidth
           />
@@ -101,9 +131,10 @@ function TokenGenerator() {
           <TextField
             label="Number of Red Tokens"
             type="number"
-            value={redTokens}
-            onChange={(e) => setRedTokens(e.target.value)}
-            onFocus={handleFocus(setRedTokens)}  
+            name="redTokens"
+            value={tokenSettings.redTokens}
+            onChange={handleChange}
+            onFocus={handleFocus('redTokens')}  
             inputProps={{ min: "0" }}
             fullWidth
           />
@@ -111,8 +142,9 @@ function TokenGenerator() {
         <Grid item xs={12}>
           <TextField
             label="Prefix for Red Tokens"
-            value={redPrefix}
-            onChange={(e) => setRedPrefix(e.target.value)}
+            name="redPrefix"
+            value={tokenSettings.redPrefix}
+            onChange={handleChange}
             fullWidth
           />
         </Grid>
@@ -120,9 +152,10 @@ function TokenGenerator() {
           <TextField
             label="Red Tokens Per Row"
             type="number"
-            value={redPerRow}
-            onChange={handleTokensPerRowChange(setRedPerRow)}
-            onFocus={handleFocus(setRedPerRow)}  
+            name="redPerRow"
+            value={tokenSettings.redPerRow}
+            onChange={handleTokensPerRowChange('redPerRow')}
+            onFocus={handleFocus('redPerRow')}  
             inputProps={{ min: "0" }}
             fullWidth
           />
@@ -142,18 +175,18 @@ function TokenGenerator() {
 
         {/* Token Display */}
         <Grid item xs={12}>
-          <Typography variant="h6">Blue Tokens ({tokens.blue.length})</Typography>
-          <div className="token-display" style={{ '--tokens-per-row': bluePerRow }}>
-            {tokens.blue.map((token, index) => (
+          <Typography variant="h6">Blue Tokens ({tokenSettings.tokens.blue.length})</Typography>
+          <div className="token-display" style={{ '--tokens-per-row': tokenSettings.bluePerRow }}>
+            {tokenSettings.tokens.blue.map((token, index) => (
               <span key={index} className="token blue-token">
                 {token}
               </span>
             ))}
           </div>
 
-          <Typography variant="h6">Red Tokens ({tokens.red.length})</Typography>
-          <div className="token-display" style={{ '--tokens-per-row': redPerRow }}>
-            {tokens.red.map((token, index) => (
+          <Typography variant="h6">Red Tokens ({tokenSettings.tokens.red.length})</Typography>
+          <div className="token-display" style={{ '--tokens-per-row': tokenSettings.redPerRow }}>
+            {tokenSettings.tokens.red.map((token, index) => (
               <span key={index} className="token red-token">
                 {token}
               </span>
